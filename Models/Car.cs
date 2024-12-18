@@ -13,9 +13,10 @@ namespace BackendConcesionario.Models
         public int Stock { get; set; }
         public string Description { get; set; } = string.Empty;
     }
-    //public enum VehicleStatus
-    //{
-    //    New,
-    //    Used
-    //}
+    public enum EstadoVehiculo
+    {
+        SemiNuevo,
+        Usado,
+        Okm
+    }
 }
