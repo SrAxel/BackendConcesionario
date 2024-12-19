@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BackendConcesionario.DataContext;
 using BackendConcesionario.Models;
@@ -25,14 +20,23 @@ namespace BackendConcesionario.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Sale>>> GetSales()
         {
-            return await _context.Sales.ToListAsync();
+            // Incluimos las relaciones de Car y Client al obtener las ventas
+            var sales = await _context.Sales
+                .Include(s => s.Car)    // Incluir los detalles del coche
+                .Include(s => s.Client) // Incluir los detalles del cliente
+                .ToListAsync();
+
+            return sales;
         }
 
         // GET: api/Sales/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Sale>> GetSale(int id)
         {
-            var sale = await _context.Sales.FindAsync(id);
+            var sale = await _context.Sales
+                .Include(s => s.Car)    // Incluir los detalles del coche
+                .Include(s => s.Client) // Incluir los detalles del cliente
+                .FirstOrDefaultAsync(s => s.Id == id);
 
             if (sale == null)
             {
@@ -43,7 +47,6 @@ namespace BackendConcesionario.Controllers
         }
 
         // PUT: api/Sales/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutSale(int id, Sale sale)
         {
@@ -74,7 +77,6 @@ namespace BackendConcesionario.Controllers
         }
 
         // POST: api/Sales
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Sale>> PostSale(Sale sale)
         {
